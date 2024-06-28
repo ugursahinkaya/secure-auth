@@ -10,12 +10,10 @@ export class SecureAuth<
     public authUrl: string,
     operations: TOperations
   ) {
-    console.log("SecureAuth constructor", Object.keys(operations));
     super(operations);
     const fetchApiOperations = {
       ...operations,
       readyToFetch: () => {
-        console.log("readyToFetch!");
         this.call("loginOrRegister");
       },
     } as SecureFetchApiOperations;
