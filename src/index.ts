@@ -26,34 +26,34 @@ export class SecureAuth<
   queryTokenValue() {
     return this.api.queryTokenValue();
   }
-  async resetPassword(phone: string) {
-    return this.api.fetch(`${this.authUrl}/resetPassword`, { phone });
+  async resetPassword(userName: string) {
+    return this.api.fetch(`${this.authUrl}/resetPassword`, { userName });
   }
   async register(
-    phone: string,
+    userName: string,
     firstName: string,
     lastName: string,
     password: string,
     password2: string
   ) {
     return this.api.fetch(`${this.authUrl}/register`, {
-      phone,
+      userName,
       firstName,
       lastName,
       password,
       password2,
     });
   }
-  async changePassword(phone: string, password: string, password2: string) {
+  async changePassword(userName: string, password: string, password2: string) {
     return this.api.fetch(`${this.authUrl}/changePassword`, {
-      phone,
+      userName,
       password,
       password2,
     });
   }
-  async validate(phone: string, smsToken: string, validationToken: string) {
+  async validate(userName: string, smsToken: string, validationToken: string) {
     return this.api.fetch(`${this.authUrl}/validate`, {
-      phone,
+      userName,
       smsToken,
       validationToken,
     });
@@ -63,9 +63,9 @@ export class SecureAuth<
       userQueryToken: queryToken,
     });
   }
-  async checkUserName(username: string, register: boolean) {
-    const res = await this.api.fetch(`${this.authUrl}/checkPhoneNumber`, {
-      username,
+  async checkUserName(userName: string, register: boolean) {
+    const res = await this.api.fetch(`${this.authUrl}/checkUserName`, {
+      userName,
       register,
     });
     if (res.data === "invalid_user") {
@@ -78,9 +78,9 @@ export class SecureAuth<
     await this.api.fetch(`${this.authUrl}/logout`, {});
     await this.call("loggedOut", { channel: "rest", secure: true });
   }
-  async login(username: string, password: string) {
+  async login(userName: string, password: string) {
     const loginRes = await this.api.fetch(`${this.authUrl}/login`, {
-      username,
+      userName,
       password,
     });
     if (loginRes.error) {
