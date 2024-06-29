@@ -20,6 +20,9 @@ export class SecureAuth<
 
     this.api = new SecureFetch(authUrl, fetchApiOperations);
   }
+  async refresh(token: string) {
+    return this.api.refresh(token);
+  }
   queryTokenValue() {
     return this.api.queryTokenValue();
   }
