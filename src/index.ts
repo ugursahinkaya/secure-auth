@@ -1,16 +1,24 @@
 import { GenericRouter } from "@ugursahinkaya/generic-router";
 import { SecureFetch } from "@ugursahinkaya/secure-fetch";
-import { SecureFetchApiOperations } from "@ugursahinkaya/shared-types";
+import {
+  SecureFetchApiOperations,
+  LogLevel,
+} from "@ugursahinkaya/shared-types";
+import { Logger } from "@ugursahinkaya/logger";
 
 export class SecureAuth<
   TOperations extends SecureFetchApiOperations,
 > extends GenericRouter<TOperations> {
   protected api: SecureFetch<SecureFetchApiOperations>;
+  protected authLogger: Logger;
   constructor(
     public authUrl: string,
-    operations: TOperations
+    operations: TOperations,
+    logLevel?: LogLevel
   ) {
     super(operations);
+    this.authLogger = new Logger("secure-auth", logLevel);
+    this.authLogger.debug("constructor");
     const fetchApiOperations = {
       ...operations,
       readyToFetch: () => {
@@ -18,7 +26,12 @@ export class SecureAuth<
       },
     } as SecureFetchApiOperations;
 
-    this.api = new SecureFetch(authUrl, fetchApiOperations);
+    this.api = new SecureFetch(authUrl, fetchApiOperations, [
+      "log",
+      "debug",
+      "warn",
+      "error",
+    ]);
   }
   async refresh(token: string) {
     return this.api.refresh(token);
