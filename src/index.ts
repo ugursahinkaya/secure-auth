@@ -18,7 +18,6 @@ export class SecureAuth<
   ) {
     super(operations);
     this.authLogger = new Logger("secure-auth", logLevel);
-    this.authLogger.debug("constructor");
     const fetchApiOperations = {
       ...operations,
       readyToFetch: () => {
@@ -26,12 +25,7 @@ export class SecureAuth<
       },
     } as SecureFetchApiOperations;
 
-    this.api = new SecureFetch(authUrl, fetchApiOperations, [
-      "log",
-      "debug",
-      "warn",
-      "error",
-    ]);
+    this.api = new SecureFetch(authUrl, fetchApiOperations, logLevel);
   }
   async refresh(token: string) {
     return this.api.refresh(token);
@@ -84,12 +78,14 @@ export class SecureAuth<
     if (res.data === "invalid_user") {
       delete res.data;
       res.error = "Hatalı kullanıcı adı";
+      this.authLogger.debug(res.error, "checkUserName");
     }
     return res;
   }
   async logout() {
     await this.api.fetch(`${this.authUrl}/logout`, {});
     await this.call("loggedOut", { channel: "rest", secure: true });
+    this.authLogger.debug("logged out");
   }
   async login(userName: string, password: string) {
     const loginRes = await this.api.fetch(`${this.authUrl}/login`, {
@@ -102,6 +98,8 @@ export class SecureAuth<
         { channel: "rest", secure: true },
         loginRes.error
       );
+      this.authLogger.error(loginRes.error, "login");
+
       return loginRes;
     }
     if (loginRes.queryToken) {
@@ -114,6 +112,7 @@ export class SecureAuth<
         { channel: "rest", secure: true },
         loginRes
       );
+      this.authLogger.debug(loginRes.process, ["login", "process"]);
     }
     return loginRes;
   }
