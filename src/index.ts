@@ -16,11 +16,13 @@ export class SecureAuth<
     operations: TOperations,
     logLevel?: LogLevel
   ) {
-    super(operations);
+    super(operations, logLevel);
     this.authLogger = new Logger("secure-auth", logLevel);
     const fetchApiOperations = {
       ...operations,
       readyToFetch: () => {
+        this.authLogger.debug("readyToFetch", "fetchApiOperations");
+
         this.call("loginOrRegister");
       },
     } as SecureFetchApiOperations;
@@ -28,6 +30,8 @@ export class SecureAuth<
     this.api = new SecureFetch(authUrl, fetchApiOperations, logLevel);
   }
   async refresh(token: string) {
+    this.authLogger.debug(token, "refresh");
+
     return this.api.refresh(token);
   }
   queryTokenValue() {
@@ -43,6 +47,7 @@ export class SecureAuth<
     password: string,
     password2: string
   ) {
+    this.authLogger.debug(userName, "register");
     return this.api.fetch(`${this.authUrl}/register`, {
       userName,
       firstName,
@@ -52,6 +57,8 @@ export class SecureAuth<
     });
   }
   async changePassword(userName: string, password: string, password2: string) {
+    this.authLogger.debug(userName, "changePassword");
+
     return this.api.fetch(`${this.authUrl}/changePassword`, {
       userName,
       password,
@@ -59,6 +66,8 @@ export class SecureAuth<
     });
   }
   async validate(userName: string, smsToken: string, validationToken: string) {
+    this.authLogger.debug(userName, "validate");
+
     return this.api.fetch(`${this.authUrl}/validate`, {
       userName,
       smsToken,
@@ -66,11 +75,15 @@ export class SecureAuth<
     });
   }
   async whoIs(queryToken: string) {
+    this.authLogger.debug(queryToken, "whoIs");
+
     return await this.api.fetch(`${this.authUrl}/getUserData`, {
       userQueryToken: queryToken,
     });
   }
   async checkUserName(userName: string, register: boolean) {
+    this.authLogger.debug(userName, `checkUserName register:${register}`);
+
     const res = await this.api.fetch(`${this.authUrl}/checkUserName`, {
       userName,
       register,
@@ -83,15 +96,21 @@ export class SecureAuth<
     return res;
   }
   async logout() {
+    this.authLogger.debug("", `logout`);
+
     await this.api.fetch(`${this.authUrl}/logout`, {});
     await this.call("loggedOut", { channel: "rest", secure: true });
-    this.authLogger.debug("logged out");
+    this.authLogger.debug("logged out", `logout`);
   }
   async login(userName: string, password: string) {
+    this.authLogger.debug(userName, `login`);
+
     const loginRes = await this.api.fetch(`${this.authUrl}/login`, {
       userName,
       password,
     });
+    this.authLogger.debug(loginRes, [`login`, "reslut"]);
+
     if (loginRes.error) {
       await this.call(
         "loginError",

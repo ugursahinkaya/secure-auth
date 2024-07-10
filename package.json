@@ -2,9 +2,6 @@
   "name": "@ugursahinkaya/secure-auth",
   "type": "module",
   "version": "0.1.0",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "license": "GPL-3.0 or Commerical",
   "description": "",
   "author": "Uğur Şahinkaya <ugur@sahinkaya.xyz>",
@@ -60,6 +57,6 @@
     "@ugursahinkaya/secure-fetch": "0.1.0",
     "@ugursahinkaya/shared-types": "0.1.0",
     "@ugursahinkaya/utils": "0.1.0",
-    "@ugursahinkaya/logger": "0.1.0"
+    "@ugursahinkaya/logger": "0.1.2"
   }
 }
